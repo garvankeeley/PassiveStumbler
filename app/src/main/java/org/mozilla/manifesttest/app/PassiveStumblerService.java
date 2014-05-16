@@ -34,6 +34,7 @@ public class PassiveStumblerService extends Service {
     BroadcastReceiver mPowerLevelReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+            unregisterReceiver(mPowerLevelReceiver);
             int rawLevel = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
             int scale = intent.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
             int level = Math.round(rawLevel * scale/100.0f);
@@ -44,7 +45,6 @@ public class PassiveStumblerService extends Service {
             }
             else {
                 setLowPowerDetectedFlag(context, false);
-                unregisterReceiver(mPowerLevelReceiver);
                 if (!mIsGpsListenerStarted) {
                     startGpsListener();
                 }
@@ -72,7 +72,7 @@ public class PassiveStumblerService extends Service {
             context.registerReceiver(mPowerLevelReceiver, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
         }
 
-        if (powerStateUnknown)
+        if (!lowPowerPreviouslyDetected)
             startGpsListener();
 
         return START_STICKY;
