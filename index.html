@@ -1,1 +1,33 @@
-My github page
+<html>
+<head>
+  <script type="text/javascript">
+
+
+    var result = null;
+    var count = 0;
+    function handlePosition(position) {
+      count += 1;
+      result.innerHTML = count + ":" + position.coords.latitude + " " +
+      position.coords.longitude;
+    }
+
+    function handleError(error) {
+      result.innerHTML = "handleError: " + error.code + " " + error.message;
+    }
+
+    function init() {
+      result = document.getElementById("result");
+
+      if (navigator.geolocation)
+        navigator.geolocation.watchPosition(handlePosition, handleError);
+      else
+        result.innerHTML = "not available";
+    }
+
+  </script>
+</head>
+<body onload="init()">
+  <p id="result">Watch position: Please wait some seconds. Determining your
+  location...</p>
+</body>
+</html>
