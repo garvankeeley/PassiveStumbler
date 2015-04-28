@@ -24,7 +24,7 @@
         }).addTo(map);
 
         $(function() {
-            $.getJSON("https://rawgit.com/boehnert/GeoJson/master/HeatIndex.geojson", function(data) {
+            $.getJSON("geojson/world.geo.json", function(data) {
                 var jsonHeat = L.geoJson(data, { 
                 style: style,
                 onEachFeature: onEachFeature
