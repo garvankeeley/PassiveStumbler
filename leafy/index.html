@@ -13,7 +13,7 @@
 <body>
     <div id="map" style="width: 600px; height: 400px"></div>
     <script>
-        var map = L.map('map').setView([51.505, -0.09], 6);
+        var map = L.map('map').setView([51.505, -0.09], 8);
 
         L.tileLayer('https://{s}.tiles.mapbox.com/v3/{id}/{z}/{x}/{y}.png', {
             maxZoom: 18,
@@ -30,8 +30,27 @@
                     "weight": 5,
                     "opacity": 0.65
                 };
+                
+                function onEachFeature(json, layer) {
+                    
+                    layer.on("mouseover", function (e) {
+                        // change the style to the hover version
+                        layer.setStyle(polyHover);
+                    });
+                    
+                    layer.on("mouseout", function (e) {
+                        // reverting the style back
+                        layer.setStyle(polyStyle);
+                    });
+                    
+                    layer.on("click", function (e) {
+                        // do something here like display a popup
+                        console.log(e);
+                    });
+                }
+                
                 L.geoJson(data, 
-                          { style: style }
+                          { style: style, onEachFeature: onEachFeature }
                 ).addTo(map);
             });
         });
