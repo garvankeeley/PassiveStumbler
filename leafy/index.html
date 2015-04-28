@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
     <script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
+    <script src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
 </head>
 
 <body>
@@ -22,6 +23,11 @@
             id: 'examples.map-i875mjb7'
         }).addTo(map);
 
+        $.getJSON("https://rawgit.com/boehnert/GeoJson/master/HeatIndex.geojson", function(data) {
+            var jsonHeat = L.geoJson(data, { 
+            style: style,
+            onEachFeature: onEachFeature
+        }).addTo(map);
 
         L.marker([51.5, -0.09]).addTo(map)
             .bindPopup("<b>Hello world!</b><br />I am a popup.").openPopup();
@@ -37,7 +43,6 @@
             [51.503, -0.06],
             [51.51, -0.047]
         ]).addTo(map).bindPopup("I am a polygon.");
-
 
         var popup = L.popup();
 
