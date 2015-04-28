@@ -23,12 +23,14 @@
             id: 'examples.map-i875mjb7'
         }).addTo(map);
 
-        $.getJSON("https://rawgit.com/boehnert/GeoJson/master/HeatIndex.geojson", function(data) {
-            var jsonHeat = L.geoJson(data, { 
-            style: style,
-            onEachFeature: onEachFeature
-        }).addTo(map);
-
+        $(function() {
+            $.getJSON("https://rawgit.com/boehnert/GeoJson/master/HeatIndex.geojson", function(data) {
+                var jsonHeat = L.geoJson(data, { 
+                style: style,
+                onEachFeature: onEachFeature
+            }).addTo(map);
+        }
+                  
         L.marker([51.5, -0.09]).addTo(map)
             .bindPopup("<b>Hello world!</b><br />I am a popup.").openPopup();
 
