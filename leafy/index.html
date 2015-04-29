@@ -31,6 +31,18 @@
                     "opacity": 0.65
                 };
                 
+                var polyHover = {
+                    "color": "#ff78ff",
+                    "weight": 10,
+                    "opacity": 0.65
+                };
+              
+                var polyClick = {
+                    "color": "#ff0000",
+                    "weight": 10,
+                    "opacity": 0.65
+                };
+                
                 function onEachFeature(json, layer) {
                     
                     layer.on("mouseover", function (e) {
@@ -40,12 +52,13 @@
                     
                     layer.on("mouseout", function (e) {
                         // reverting the style back
-                        layer.setStyle(polyStyle);
+                        layer.setStyle(style);
                     });
                     
                     layer.on("click", function (e) {
                         // do something here like display a popup
                         console.log(e);
+                        layer.setStyle(polyClick);
                     });
                 }
                 
