@@ -32,9 +32,9 @@
                 };
                 
                 var polyHover = {
-                    "color": "#ff78ff",
-                    "weight": 10,
-                    "opacity": 1
+                    "color": "#0078ff",
+                    "weight": 8,
+                    "opacity": .8
                 };
               
                 var polyClick = {
@@ -59,6 +59,7 @@
                         // do something here like display a popup
                         console.log(e);
                         layer.setStyle(polyClick);
+                        console.log(json);
                     });
                 }
                 
@@ -68,31 +69,7 @@
             });
         });
                   
-        L.marker([51.5, -0.09]).addTo(map)
-            .bindPopup("<b>Hello world!</b><br />I am a popup.").openPopup();
-
-        L.circle([51.508, -0.11], 500, {
-            color: 'red',
-            fillColor: '#f03',
-            fillOpacity: 0.5
-        }).addTo(map).bindPopup("I am a circle.");
-
-        L.polygon([
-            [51.509, -0.08],
-            [51.503, -0.06],
-            [51.51, -0.047]
-        ]).addTo(map).bindPopup("I am a polygon.");
-
-        var popup = L.popup();
-
-        function onMapClick(e) {
-            popup
-                .setLatLng(e.latlng)
-                .setContent("You clicked the map at " + e.latlng.toString())
-                .openOn(map);
-        }
-
-        map.on('click', onMapClick);
+  
     </script>
 </body>
 
