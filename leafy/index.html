@@ -73,7 +73,7 @@
         });
         
         function thing(countryId) {
-            $.getJSON(kServer + "leaders?" + countryId, function(data) {
+            $.getJSON(kServer + "/leaders?" + countryId, function(data) {
                 var items = [];
                 $.each( data, function( key, val ) {
                     items.push( "<li id='" + key + "'>" + val + "</li>" );
