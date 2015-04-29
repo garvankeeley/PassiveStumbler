@@ -10,6 +10,10 @@
 </head>
 <body>
     <div id="map" style="width: 600px; height: 400px"></div>
+    <div id="country" style="width: 600px; height: 40px">
+        <h1 id="country_title"></h1>
+    </div>
+    
     <script>
         var kServer = "http://gktoronto.duckdns.org:8000"
         var map = L.map('map').setView([51.505, -0.09], 1);
@@ -64,6 +68,10 @@
         function thing(countryId) {
             $.getJSON(kServer + "/leaders?" + countryId, function(data) {
                 console.log(data);
+                var item = $("#country_title");
+                item.text(data.name);
+                
+                
                 var items = [];
                 $.each( data, function( key, val ) {
                     items.push( "<li id='" + key + "'>" + val + "</li>" );
