@@ -12,6 +12,7 @@
     <div id="map" style="width: 600px; height: 400px"></div>
     <div id="country" style="width: 600px; height: 40px">
         <h1 id="country_title"></h1>
+        <ul id="leaders"></ul>
     </div>
     
     <script>
@@ -68,18 +69,15 @@
         function thing(countryId) {
             $.getJSON(kServer + "/leaders?" + countryId, function(data) {
                 console.log(data);
-                var item = $("#country_title");
-                item.text(data.name);
+                $("#country_title").text(data.country_name);
+                var ul = $("#leaders");
+                ul.empty();
                 
-                
-                /*var items = [];
-                $.each( data, function( key, val ) {
-                    items.push( "<li id='" + key + "'>" + val + "</li>" );
+                $.each(data.leaders, function(key, val) {
+                    ul.append($('<li>').append(key + ":" + val));
                 });
-                $( "<ul/>", {
-                    "class": "my-new-list",
-                    html: items.join( "" )
-                }).appendTo( "body" );*/
+                
+                
             });
         }
     </script>
