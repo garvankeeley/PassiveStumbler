@@ -74,7 +74,7 @@
                 ul.empty();
                 
                 $.each(data.leaders, function(key, val) {
-                    ul.append($('<li>').append(key + ":" + val));
+                    ul.append($('<li>').append(key + ":" + val.name + ":" + val.observations));
                 });
                 
                 
