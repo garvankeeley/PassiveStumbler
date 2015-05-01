@@ -28,6 +28,8 @@ def create_cell_geo(lat, lon):
 
 #if __name__ == '__main__':
 
+_cell_was_created = False
+
 def get_or_create_cell(coord):
     #print 'coord', coord
     conn = pg8000.connect()
@@ -41,7 +43,9 @@ def get_or_create_cell(coord):
     except:
         pass
 
+    global _cell_was_created
     if pk:
+        _cell_was_created = False
         return pk
 
     lat = coord[1]
@@ -58,6 +62,7 @@ def get_or_create_cell(coord):
     curs.execute("insert into gridcell(wkb_geometry) values(ST_GeomFromText('%s', 4326))"
                  " returning gridcell_pk" % geo_string)
     conn.commit()
+    _cell_was_created = True
     return curs.fetchone()[0]
 
 def create_random_users():
@@ -110,11 +115,17 @@ def func(coords):
             except pg8000.core.ProgrammingError as ex:
                 print ex
 
-with open('world.geo.json') as data_file:
-    data = json.load(data_file)
-    for item in data['features']:
-        for c in item['geometry']['coordinates']:
-            func(c)
+def doit():
+    with open('world.geo.json') as data_file:
+        data = json.load(data_file)
+        for item in data['features']:
+            for c in item['geometry']['coordinates']:
+                func(c)
+
+
+cc = [-79.4, 43.7]
+
+
 
 #create_random_users()
 
