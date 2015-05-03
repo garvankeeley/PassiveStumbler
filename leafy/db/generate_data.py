@@ -3,30 +3,68 @@ import pg8000
 import sys
 import geopy, math
 from geopy.distance import vincenty
+from math import radians, cos, sin, asin, sqrt
 
-def create_cell_geo(lat, lon):
-    d = vincenty((0, 0), (lat, 0)).km
-    y = math.floor(d * 2) / 2
-    d = vincenty((lat, 0), (lat, lon)).km
-    x = math.floor(d * 2) / 2
-    dest1 = vincenty(kilometers=y).destination((0, 0), 0)
-    dest2 = vincenty(kilometers=x).destination((lat, 0), 90)
-    lat, lon = dest1.latitude, dest2.longitude
-    
-    result = []
-    kDist = 0.5
-    origin = geopy.Point(lat, lon);
-    dest = vincenty(kilometers=kDist).destination(origin, 0)
-    lat2, lon2 = dest.latitude, dest.longitude
-    dest = vincenty(kilometers=kDist).destination(dest, 90)
-    lat3, lon3 = dest.latitude, dest.longitude
-    dest = vincenty(kilometers=kDist).destination(origin, 90)
-    lat4, lon4 = dest.latitude, dest.longitude
-    result = [(lat, lon), (lat2, lon2), (lat3, lon3), (lat4, lon4), (lat, lon)]
-    result = [[round(a, 8) for a in x] for x in result]
+mercator_id = 3785
+wgs84_id = 4326
+
+def haversine(lon1, lat1, lon2, lat2):
+    """
+    Calculate the great circle distance between two points
+    on the earth (specified in decimal degrees)
+    """
+    # convert decimal degrees to radians
+    lon1, lat1, lon2, lat2 = map(radians, [lon1, lat1, lon2, lat2])
+    # haversine formula
+    dlon = lon2 - lon1
+    dlat = lat2 - lat1
+    a = sin(dlat/2)**2 + cos(lat1) * cos(lat2) * sin(dlon/2)**2
+    c = 2 * asin(sqrt(a))
+    km = 6367 * c
+    return km
+
+
+def create_cell_geo(lon, lat):
+    conn = pg8000.connect()
+    curs = conn.cursor()
+    q = "SELECT ST_AsText(ST_Transform(ST_SetSRID(ST_POINT(%f, %f), %d), %d))" % \
+                 (lon, lat, wgs84_id, mercator_id)
+    #print q
+    curs.execute(q)
+    easting, northing = curs.fetchone()[0].replace('POINT(', '').replace(')', '').split()
+    # point to mercator, find nearest grid cell lower left
+
+    e_ll = math.floor(float(easting) * 2) / 2
+    n_ll = math.floor(float(northing) * 2) / 2
+
+    dist_km = 0.5
+    result = [(e_ll, n_ll), (e_ll, n_ll + dist_km), (e_ll + dist_km, n_ll + dist_km),
+              (e_ll + dist_km, n_ll), (e_ll, n_ll)]
     return result
 
 #if __name__ == '__main__':
+
+def get_country(geo_string):
+    geo = "ST_GeomFromText('%s', %d)" % (geo_string, mercator_id)
+    transform = "ST_Transform(%s, %d)" % (geo, wgs84_id)
+    select = "SELECT ogc_fid FROM country_bounds where ST_Contains(wkb_geometry, ST_Centroid(%s))" % transform
+    conn = pg8000.connect()
+    curs = conn.cursor()
+    curs.execute(select)
+    result = curs.fetchone()
+    if result and len(result) == 1:
+        return result[0]
+
+    conn = pg8000.connect()
+    curs = conn.cursor()
+    intersect = "SELECT ogc_fid FROM country_bounds where ST_Intersects(wkb_geometry, %s)" % transform
+    curs.execute(intersect)
+    result = curs.fetchone()
+    if not result:
+        print intersect
+        print "error"
+
+    return result[0]
 
 _cell_was_created = False
 
@@ -37,8 +75,9 @@ def get_or_create_cell(coord):
     pk = None
     try:
         curs.execute("SELECT gridcell_pk FROM gridcell where " +
-                     "ST_Contains(wkb_geometry, ST_GeomFromText('POINT(%.8f %.8f)',4326))" %
-                     (coord[0], coord[1]))
+                     "ST_Contains(wkb_geometry, ST_Transform("
+                     "ST_GeomFromText('POINT(%.8f %.8f)', %d), %d))" %
+                     (coord[0], coord[1], wgs84_id, mercator_id))
         pk = curs.fetchone()[0]
     except:
         pass
@@ -54,24 +93,35 @@ def get_or_create_cell(coord):
         print "bad lat lon: ", lat, lon
         return None
 
-    geo = create_cell_geo(lat, lon)
+    geo = create_cell_geo(lon, lat)
     geo_string = 'POLYGON((' + ','.join([' '.join([str(a) for a in x]) for x in geo]) + '))'
+
+    try:
+        country_pk = get_country(geo_string)
+    except:
+        print "no country: " + geo_string
+        get_country(geo_string)
+        return None
 
     conn = pg8000.connect()
     curs = conn.cursor()
-    curs.execute("insert into gridcell(wkb_geometry) values(ST_GeomFromText('%s', 4326))"
-                 " returning gridcell_pk" % geo_string)
+    q = "insert into gridcell(wkb_geometry, country_fk) values(ST_GeomFromText('%s', %d), %d) returning gridcell_pk" \
+        % (geo_string, mercator_id, country_pk)
+    #print q
+    curs.execute(q)
     conn.commit()
     _cell_was_created = True
-    return curs.fetchone()[0]
+    pk = curs.fetchone()[0]
+    #print geo_string
+    return pk
 
 def create_random_users():
     conn = pg8000.connect()
     curs = conn.cursor()
-    for i in range(1900, 2100):
+    for i in range(0, 2000):
         try:
             curs.execute("INSERT INTO userinfo(name) VALUES ('%s')" % ('name' + str(i)))
-            conn.comit()
+            conn.commit()
         except:
             print sys.exc_info()[0]
             conn.rollback()
@@ -94,12 +144,12 @@ def insert_week(week, year, obs, userpk, cellpk):
     curs = conn.cursor()
     try:
         curs.execute("""
-            insert into week(week_num, year, observations, userinfo_fk, gridcell_fk)
+            insert into weekly_report(week_of_year, year, observations, userinfo_fk, gridcell_fk)
              values(%d, %d, %d, %d, %d)
         """ % (week, year, obs, userpk, cellpk))
         conn.commit()
-    finally:
-        pass
+    except pg8000.Error as ex:
+        print ex
 
 from random import randint
 def func(coords):
@@ -116,16 +166,12 @@ def func(coords):
                 print ex
 
 def doit():
-    with open('world.geo.json') as data_file:
+    with open('../geojson/world.geo.json') as data_file:
         data = json.load(data_file)
         for item in data['features']:
+            print item['id']
             for c in item['geometry']['coordinates']:
                 func(c)
 
-
-cc = [-79.4, 43.7]
-
-
-
 #create_random_users()
-
+doit()

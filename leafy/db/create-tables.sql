@@ -3,7 +3,7 @@ CREATE TABLE GRIDCELL (
     country_fk int NOT NULL,
     CONSTRAINT GRIDCELL_pk PRIMARY KEY(gridcell_pk)
 );
-SELECT AddGeometryColumni('gridcell', 'wkb_geometry', 4326, 'POLYGON', 2);
+SELECT AddGeometryColumn('gridcell', 'wkb_geometry', 3785, 'POLYGON', 2);
 
 CREATE TABLE USERINFO (
     userinfo_pk bigserial  NOT NULL,
@@ -24,7 +24,7 @@ CREATE TABLE WEEKLY_REPORT (
     gridcell_fk bigint  NOT NULL,
     CONSTRAINT WEEKLY_REPORT_pk PRIMARY KEY (weekly_report_pk)
 );
-ALTER TABLE WEEKLY_REPORT ADD UNIQUE INDEX(week_of_year, year, userinfo_ok, gridcell_fk);
+CREATE UNIQUE INDEX WEEKLY_REPORT_UNIQUE ON WEEKLY_REPORT(week_of_year, year, userinfo_fk, gridcell_fk);
 ALTER TABLE WEEKLY_REPORT ADD CONSTRAINT WEEKLY_REPORT_GRIDCELL
     FOREIGN KEY (gridcell_fk)
     REFERENCES GRIDCELL (gridcell_pk)
@@ -37,4 +37,3 @@ ALTER TABLE WEEKLY_REPORT ADD CONSTRAINT WEEKLY_REPORT_USERINFO
     NOT DEFERRABLE
     INITIALLY IMMEDIATE
 ;
-
