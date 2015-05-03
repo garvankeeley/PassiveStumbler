@@ -26,6 +26,8 @@
             id: 'examples.map-i875mjb7'
         }).addTo(map);
 
+        var lastClickedCountry = null;
+        
         $(function() {
             $.getJSON("geojson/world.geo.json", function(data) {
                 var style = {
@@ -53,7 +55,11 @@
                         layer.setStyle(style);
                     });
                     layer.on("click", function (e) {
-                        // do something here like display a popup
+                        if (lastClickedCountry) {
+                            lastClickedCountry.setStyle(style);
+                        }
+                        lastClickedCountry = layer;
+                        
                         console.log(e);
                         layer.setStyle(polyClick);
                         console.log(json.id_num);
