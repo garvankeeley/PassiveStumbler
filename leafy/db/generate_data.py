@@ -5,33 +5,49 @@ import geopy, math
 from geopy.distance import vincenty
 from math import radians, cos, sin, asin, sqrt
 
-mercator_id = 3785
+mercator_id = 3857 # http://en.wikipedia.org/wiki/Web_Mercator 3785 # 900913 or 3857
 wgs84_id = 4326
 
-def haversine(lon1, lat1, lon2, lat2):
-    """
-    Calculate the great circle distance between two points
-    on the earth (specified in decimal degrees)
-    """
-    # convert decimal degrees to radians
-    lon1, lat1, lon2, lat2 = map(radians, [lon1, lat1, lon2, lat2])
-    # haversine formula
-    dlon = lon2 - lon1
-    dlat = lat2 - lat1
-    a = sin(dlat/2)**2 + cos(lat1) * cos(lat2) * sin(dlon/2)**2
-    c = 2 * asin(sqrt(a))
-    km = 6367 * c
-    return km
+
+# Code from here, http://wiki.openstreetmap.org/wiki/Mercator
+def merc_x(lon):
+    r_major = 6378137.000
+    return r_major * math.radians(lon)
 
 
-def create_cell_geo(lon, lat):
+def merc_y(lat):
+    if lat > 89.5:
+        lat = 89.5
+    if lat < -89.5:
+        lat = -89.5
+    r_major = 6378137.000
+    r_minor = r_major  # orig code is r_minor=6356752.3142, which is not SRID 3857
+    temp = r_minor / r_major
+    eccent = math.sqrt(1 - temp ** 2)
+    phi = math.radians(lat)
+    sinphi = math.sin(phi)
+    con = eccent * sinphi
+    com = eccent / 2
+    con = ((1.0 - con) / (1.0 + con)) ** com
+    ts = math.tan((math.pi / 2 - phi) / 2) / con
+    y = 0 - r_major * math.log(ts)
+    return y
+
+
+def get_easting_northing(lon, lat):
     conn = pg8000.connect()
     curs = conn.cursor()
     q = "SELECT ST_AsText(ST_Transform(ST_SetSRID(ST_POINT(%f, %f), %d), %d))" % \
                  (lon, lat, wgs84_id, mercator_id)
-    #print q
     curs.execute(q)
     easting, northing = curs.fetchone()[0].replace('POINT(', '').replace(')', '').split()
+    print northing, merc_y(lat), easting, merc_x(lon)
+    return easting, northing
+
+
+def create_cell_geo(lon, lat):
+    easting, northing = get_easting_northing(lon, lat)
+
     # point to mercator, find nearest grid cell lower left
 
     e_ll = math.floor(float(easting) * 2) / 2
@@ -154,16 +170,24 @@ def insert_week(week, year, obs, userpk, cellpk):
 from random import randint
 def func(coords):
     for coord in coords:
-        cell = get_or_create_cell(coord)
-        if not cell:
-            continue
-        for i in range(0, 5):
-            user = get_user_pk('name' + str(randint(0, 1000)))
-            #print cell, user
-            try:
-              insert_week(10, 2015, randint(10,100), user, cell)
-            except pg8000.core.ProgrammingError as ex:
-                print ex
+        lat = coord[1]
+        lon = coord[0]
+        if not isinstance(lat, float) or not isinstance(lon, float):
+            print "bad lat lon: ", lat, lon
+            return None
+
+    geo = get_easting_northing(lon, lat)
+
+        # cell = get_or_create_cell(coord)
+        # if not cell:
+        #    continue
+        # for i in range(0, 5):
+        #     user = get_user_pk('name' + str(randint(0, 1000)))
+        #     #print cell, user
+        #     try:
+        #       insert_week(10, 2015, randint(10,100), user, cell)
+        #     except pg8000.core.ProgrammingError as ex:
+        #         print ex
 
 def doit():
     with open('../geojson/world.geo.json') as data_file:

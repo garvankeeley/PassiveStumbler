@@ -12,7 +12,7 @@
     <div id="map" style="width: 100%; max-width: 600px; height: 400px"></div>
     <div id="country" style="width: 100%; height: 40px">
         <h1 id="country_title"></h1>
-        <ul id="leaders"></ul>
+        <table id="leaders"></table>
     </div>
     
     <script>
@@ -32,17 +32,17 @@
             $.getJSON("geojson/world.geo.json", function(data) {
                 var style = {
                     "color": "#ff7800",
-                    "weight": 5,
+                    "weight": 3,
                     "opacity": 0.65
                 };
                 var polyHover = {
                     "color": "#0078ff",
-                    "weight": 8,
+                    "weight": 4,
                     "opacity": .8
                 };
                 var polyClick = {
                     "color": "#ff0000",
-                    "weight": 10,
+                    "weight": 5,
                     "opacity": 0.65
                 };
                 function onEachFeature(json, layer) {
@@ -76,11 +76,11 @@
             $.getJSON(kServer + "/leaders?" + countryId, function(data) {
                 console.log(data);
                 $("#country_title").text(data.country_name);
-                var ul = $("#leaders");
-                ul.empty();
-                
+                var list = $("#leaders");
+                list.empty();
+                int i = 0;
                 $.each(data.leaders, function(key, val) {
-                    ul.append($('<li>').append(key + ":" + val.name + ":" + val.observations));
+                    list.append('<tr><td>' + (++i) + '</td><td>' + val.name + '</td><td>' + val.observations + '</td></tr>');
                 });
                 
                 
