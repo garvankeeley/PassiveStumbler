@@ -29,9 +29,9 @@
     <script>
         var kServer = "http://gktoronto.duckdns.org:8000"
         var map = L.map('map').setView([51.505, -0.09], 1);
-        L.tileLayer('http://{s}.tile.openstreetmap.fr.hot/{z}/{x}/{y}.png', {
+        L.tileLayer('http://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
             maxZoom: 18,
-            attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+            attribution:'&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, Tiles courtesy of <a href="http://hot.openstreetmap.org/" target="_blank">Humanitarian OpenStreetMap Team</a>'
 
         }).addTo(map);
 
