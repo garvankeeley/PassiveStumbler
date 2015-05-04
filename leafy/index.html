@@ -78,7 +78,7 @@
                 $("#country_title").text(data.country_name);
                 var list = $("#leaders");
                 list.empty();
-                vat i = 0;
+                var i = 0;
                 $.each(data.leaders, function(key, val) {
                     list.append('<tr><td>' + (++i) + '</td><td>' + val.name + '</td><td>' + val.observations + '</td></tr>');
                 });
