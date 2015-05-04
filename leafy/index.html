@@ -12,7 +12,7 @@
     <div id="map" style="width: 100%; max-width: 600px; height: 400px"></div>
     <div id="country" style="width: 100%; height: 40px">
         <h1 id="country_title"></h1>
-        <table class="table">
+        <table class="table" id="leaders">
         <thead>
                 <tr>
                     <th>Rank</th>
@@ -20,7 +20,7 @@
                     <th class="text-right">Points</th>
                 </tr>
             </thead>
-            <tbody id="leaders"></tbody>
+            <tbody></tbody>
         </table>
     </div>
     
@@ -85,7 +85,7 @@
             $.getJSON(kServer + "/leaders?" + countryId, function(data) {
                 console.log(data);
                 $("#country_title").text(data.country_name);
-                var list = $("#leaders");
+                var list = $("#leaders tbody");
                 list.empty();
                 var i = 0;
                 $.each(data.leaders, function(key, val) {
