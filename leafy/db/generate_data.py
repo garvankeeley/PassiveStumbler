@@ -71,15 +71,17 @@ def get_country(geo_string):
     if result and len(result) == 1:
         return result[0]
 
-    conn = pg8000.connect()
     curs = conn.cursor()
     intersect = "SELECT ogc_fid FROM country_bounds where ST_Intersects(wkb_geometry, %s)" % transform
     curs.execute(intersect)
     result = curs.fetchone()
-    if not result:
-        print intersect
-        print "error"
+    if result:
+      return result[0]
 
+    curs = conn.cursor()
+    nearby = "SELECT ogc_fid FROM country_bounds ORDER BY wkb_geometry <-> ST_Centroid(%s) LIMIT 1" % transform
+    curs.execute(nearby)
+    result = curs.fetchone()
     return result[0]
 
 _cell_was_created = False
@@ -198,4 +200,8 @@ def doit():
                 func(c)
 
 #create_random_users()
-doit()
+#doit()
+
+p = (-9.4, 51.5)
+c = get_or_create_cell(p)
+
