@@ -12,7 +12,16 @@
     <div id="map" style="width: 100%; max-width: 600px; height: 400px"></div>
     <div id="country" style="width: 100%; height: 40px">
         <h1 id="country_title"></h1>
-        <table id="leaders"></table>
+        <table class="table" id="leaders">
+        <thead>
+                <tr>
+                    <th>Rank</th>
+                    <th>User</th>
+                    <th class="text-right">Points</th>
+                </tr>
+            </thead>
+            <tbody id="leaders"></tbody>
+        </table>
     </div>
     
     <script>
