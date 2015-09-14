@@ -1,29 +1,20 @@
 <html>
     <script type="application/javascript">
-//    function receiveMessage(event) {
-//        var images = document.images;
-//        event.source.postMessage("iframe-broadcast-imageslist", event.origin, images);
-//        console.log('GOT IT');
-//    }
-//    
-//    window.addEventListener("maindoc-broadcast-getimages", receiveMessage, false);
-//    document.addEventListener("maindoc-broadcast-getimages", receiveMessage, false);
-//   // illegal:  window.top.addEventListener("maindoc-broadcast-getimages", receiveMessage, false);
-//        
-////        function send(){
-////    window.parent.window.postMessage(
-////        {'func':'alertMyMessage','params':['Thanks for Helping me']},
-////        'http://www.my-website.com'
-////    );
-////}
-//        
-//        window.top.postMessage("iframe-broadcast-imageslist", "*")
-//        
-//        
+
+        window.addEventListener('message', function(event) {
+            if (event.data != 'maindoc-message-getimages') return;
+            
+          console.log('message received:  ' + event.data,event);
+            var images = document.images;
+            var result = []
+            for (var i = 0; i < images.length; i++) {
+                result.push(images[i].src);
+            }
+            
+            event.source.postMessage(result, '*');
         
-        window.onload = function () {
-            top.postMessage('foo', '*');
-        }
+        }, false);
+        
     </script>
 <img src="https://i.ytimg.com/vi/wMzRnOLdck0/0.jpg" />
 </html>

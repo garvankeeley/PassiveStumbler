@@ -1,27 +1,24 @@
 <html>
     <script type="application/javascript">
+    
     function receiveMessage(event) {
         console.log('parent got message!');
         var images = event.data;
         var result = "";
         for (var i = 0; i < images.length; i++) {
-            result += '<p>' +images[i].src + '</p>';   
+            result += '<p>' +images[i] + '</p>';   
         }
-        document.body += '<div>' + result + '</div>';
+        document.body.innerHTML += '<div>' + result + '</div>';
     }
         
-    window.addEventListener("foo", receiveMessage, false);
-    window.top.addEventListener("iframe-broadcast-imageslist", receiveMessage, false);
+    window.addEventListener("message", receiveMessage, false);
+
     window.onload = function () {
-        window.postMessage("iframe-broadcast-imageslist", "*");
         
         var frames = window.frames;
         for (var i = 0; i < frames.length; i++) {
-            frames[i].postMessage("maindoc-broadcast-getimages", "*");
-            frames[i].window.postMessage("maindoc-broadcast-getimages", "*");
-            frames[i].window.top.postMessage("maindoc-broadcast-getimages", "*");
-}
-        window.postMessage("maindoc-broadcast-getimages", "*");
+            frames[i].postMessage("maindoc-message-getimages", "*");
+        }
     }
   
 //function receive(event){
@@ -32,8 +29,9 @@
 //}   
     
     </script>
+    
 <body>
-    Main page<p>
-    </p>
+    Main page<p></p>
     <iframe src="adrepl_iframe.html" width="600" height="400"></iframe>
-</body></html>  
+</body>
+</html>  
