@@ -8,7 +8,7 @@ var myPopup = window.open('http://garvankeeley.github.io/web/message1.html','myW
 setInterval(function(){
   var message = 'Hello!  The time is: ' + (new Date().getTime());
   console.log('blog.local:  sending message:  ' + message);
-  myPopup.postMessage(message,domain); //send the message and target URI
+  myPopup.postMessage(message, '*'); //send the message and target URI
 },6000);
 
 //listen to holla back
