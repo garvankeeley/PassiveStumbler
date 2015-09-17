@@ -3,18 +3,66 @@
 
         window.addEventListener('message', function(event) {
             if (event.data != 'maindoc-message-getimages') return;
-            
+
+           location.href = 'data:text/html,%3Ch1%3EHello%2C%20World!%3C%2Fh1%3E';
+
           console.log('message received:  ' + event.data,event);
             var images = document.images;
             var result = []
             for (var i = 0; i < images.length; i++) {
                 result.push(images[i].src);
             }
-            
             event.source.postMessage(result, '*');
-        
         }, false);
-        
+
+
+
+
+var prevent_bust = false ;
+    var from_loading_204 = false;
+    var frame_loading = false;
+    var prevent_bust_timer = 0;
+    var  primer = true;
+    window.onbeforeunload = function(event) {
+        prevent_bust = !from_loading_204 && frame_loading;
+        if(from_loading_204)from_loading_204 = false;
+        if(prevent_bust){
+            prevent_bust_timer=500;
+        }
+    }
+    function frameLoad(){
+        if(!primer){
+            from_loading_204 = true;
+            window.top.location = '/?204';
+            prevent_bust = false;
+            frame_loading = true;
+            prevent_bust_timer=1000;
+        }else{
+            primer = false;
+        }
+    }
+    setInterval(function() {  
+        if (prevent_bust_timer>0) {  
+            if(prevent_bust){
+                from_loading_204 = true;
+                window.top.location = '/?204';
+                prevent_bust = false;
+            }else if(prevent_bust_timer == 1){
+                frame_loading = false;
+                prevent_bust = false;
+                from_loading_204 = false;
+                prevent_bust_timer == 0;
+            }
+
+
+
+        }
+        prevent_bust_timer--;
+        if(prevent_bust_timer==-100) {
+            prevent_bust_timer = 0;
+        }
+    }, 1);
+
     </script>
-<img src="https://i.ytimg.com/vi/wMzRnOLdck0/0.jpg" />
+<img src="http://storage.lfpress.com/v1/suns-prod-images/communities/photo/51167.jpg" />
 </html>

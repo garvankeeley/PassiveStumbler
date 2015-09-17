@@ -1,6 +1,8 @@
 <html>
     <script type="application/javascript">
-    
+
+    function LL(x) { console.log(x);}
+
     function receiveMessage(event) {
         console.log('parent got message!');
         var images = event.data;
@@ -14,7 +16,42 @@
     window.addEventListener("message", receiveMessage, false);
 
     window.onload = function () {
-        
+
+      var observer = new MutationObserver(function(mutations) {
+          mutations.forEach(function(mutation) {
+            var target = mutation.target;
+            switch (mutation.type) {
+            case "attributes":
+            LL("The attribute " + mutation.attributeName
+              + " of the node " + target.nodeName
+              + " changed from '" + mutation.oldValue + "'"
+              + " to '" + target.getAttribute(mutation.attributeName) + "'");
+            break;
+            case "childList":
+            Array.prototype.forEach.call(mutation.addedNodes, function(node) {
+              LL("Node " + node.nodeName + " added to " + target.nodeName);
+              });
+            Array.prototype.forEach.call(mutation.removedNodes, function(node) {
+              LL("Node " + node.nodeName + " removed from " + target.nodeName);
+              });
+            break;
+            case "characterData":
+            LL("Content of " + target.nodeName + " changed from '" + mutation.oldValue + "' to '" + target.data + "'");
+            break;
+            }
+          });
+      });
+
+      observer.observe(document.body, {
+                                        childList : true,
+                                        attributes : true,
+                                        characterData : true,
+                                        subtree : true,
+                                        attributeOldValue : true,
+                                        characterDataOldValue : true
+                                        });
+
+
         var frames = window.frames;
         for (var i = 0; i < frames.length; i++) {
             frames[i].postMessage("maindoc-message-getimages", "*");
@@ -27,11 +64,14 @@
 //        window[data.func].call(null, data.params[0]);
 //    }
 //}   
-    
+   
+
+
+
     </script>
     
 <body>
     Main page<p></p>
-    <iframe src="adrepl_iframe.html" width="600" height="400"></iframe>
+    <iframe id='foo' src="adrepl_iframe.html" width="600" height="400"></iframe>
 </body>
 </html>  
