@@ -1,4 +1,6 @@
 <html>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+
     <script type="application/javascript">
 
     function LL(x) { console.log(x);}
@@ -16,6 +18,8 @@
     window.addEventListener("message", receiveMessage, false);
 
     window.onload = function () {
+
+      setTimeout(function() { $('#foo').contents().find('html').html("LALALA"); }, 3000);
 
       var observer = new MutationObserver(function(mutations) {
           mutations.forEach(function(mutation) {
@@ -72,6 +76,6 @@
     
 <body>
     Main page<p></p>
-    <iframe id='foo' src="adrepl_iframe.html" width="600" height="400"></iframe>
+    <iframe id='foo' src="http://garvankeeley.github.io/web/adrepl_iframe.html" width="600" height="400"></iframe>
 </body>
 </html>  
