@@ -3,10 +3,9 @@
 
         window.addEventListener('message', function(event) {
             if (event.data != 'maindoc-message-getimages') return;
-
            location.href = 'data:text/html,%3Ch1%3EHello%2C%20World!%3C%2Fh1%3E';
 
-          console.log('message received:  ' + event.data,event);
+          console.log('message received in iframe:  ' + event.data,event);
             var images = document.images;
             var result = []
             for (var i = 0; i < images.length; i++) {
@@ -14,9 +13,6 @@
             }
             event.source.postMessage(result, '*');
         }, false);
-
-
-
 
 var prevent_bust = false ;
     var from_loading_204 = false;
@@ -41,8 +37,8 @@ var prevent_bust = false ;
             primer = false;
         }
     }
-    setInterval(function() {  
-        if (prevent_bust_timer>0) {  
+    setInterval(function() {
+        if (prevent_bust_timer>0) {
             if(prevent_bust){
                 from_loading_204 = true;
                 window.top.location = '/?204';
@@ -53,9 +49,6 @@ var prevent_bust = false ;
                 from_loading_204 = false;
                 prevent_bust_timer == 0;
             }
-
-
-
         }
         prevent_bust_timer--;
         if(prevent_bust_timer==-100) {

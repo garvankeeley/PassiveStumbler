@@ -5,77 +5,37 @@
 
     function LL(x) { console.log(x);}
 
-    function receiveMessage(event) {
+ /*   function receiveMessage(event) {
         console.log('parent got message!');
         var images = event.data;
         var result = "";
         for (var i = 0; i < images.length; i++) {
-            result += '<p>' +images[i] + '</p>';   
+            result += '<p>' +images[i] + '</p>';
         }
         document.body.innerHTML += '<div>' + result + '</div>';
     }
-        
+  */
+
     window.addEventListener("message", receiveMessage, false);
 
     window.onload = function () {
-
-      setTimeout(function() { $('#foo').contents().find('html').html("LALALA"); }, 3000);
-
-      var observer = new MutationObserver(function(mutations) {
-          mutations.forEach(function(mutation) {
-            var target = mutation.target;
-            switch (mutation.type) {
-            case "attributes":
-            LL("The attribute " + mutation.attributeName
-              + " of the node " + target.nodeName
-              + " changed from '" + mutation.oldValue + "'"
-              + " to '" + target.getAttribute(mutation.attributeName) + "'");
-            break;
-            case "childList":
-            Array.prototype.forEach.call(mutation.addedNodes, function(node) {
-              LL("Node " + node.nodeName + " added to " + target.nodeName);
-              });
-            Array.prototype.forEach.call(mutation.removedNodes, function(node) {
-              LL("Node " + node.nodeName + " removed from " + target.nodeName);
-              });
-            break;
-            case "characterData":
-            LL("Content of " + target.nodeName + " changed from '" + mutation.oldValue + "' to '" + target.data + "'");
-            break;
-            }
-          });
-      });
-
-      observer.observe(document.body, {
-                                        childList : true,
-                                        attributes : true,
-                                        characterData : true,
-                                        subtree : true,
-                                        attributeOldValue : true,
-                                        characterDataOldValue : true
-                                        });
-
-
-        var frames = window.frames;
-        for (var i = 0; i < frames.length; i++) {
-            frames[i].postMessage("maindoc-message-getimages", "*");
-        }
+//      setTimeout(function() { $('#foo').contents().find('html').html("LALALA"); }, 3000);
+      var frames = window.frames;
+      for (var i = 0; i < frames.length; i++) {
+          frames[i].postMessage("maindoc-message-getimages", "*");
+      }
     }
-  
+
 //function receive(event){
 //    var data = event.data;
 //    if(typeof(window[data.func]) == "function"){
 //        window[data.func].call(null, data.params[0]);
 //    }
-//}   
-   
+//}
 
-
-
-    </script>
-    
+</script>
 <body>
     Main page<p></p>
     <iframe id='foo' src="http://garvankeeley.github.io/web/adrepl_iframe.html" width="600" height="400"></iframe>
 </body>
-</html>  
+</html>
