@@ -1,7 +1,17 @@
-<html><script>
+<html><head>
+    <style>
+    a {
+    -webkit-touch-callout: none !important;
+}
+    </style></head>
+    
+<script>
     //respond to events
     window.addEventListener('message',function(event) {
           console.log('message received:  ' + event.data,event);
            event.source.postMessage('holla back youngin!',event.origin);
           },false);
-</script></html>
+</script>
+
+a <a href="http://google.ca">link</a>
+</html>
