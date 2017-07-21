@@ -4,6 +4,7 @@
     function quicksearch(id, tag) {
         var input = document.getElementById(id);
         input.value = tag + input.value;
+      setTimeout(function(){ input.value = input.value.replace(tag, '') }, 200);
     }
 </script>
 </head>
