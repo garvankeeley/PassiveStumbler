@@ -1,29 +1,34 @@
 <html>
 <head>
-  <style media="screen" type="text/css">
-    body{
-      font: 24px Arial, sans-serif;
+    <script type="text/javascript">
+    function quicksearch(id, tag) {
+        var input = document.getElementById(id);
+        input.value = tag + input.value;
     }
-  </style>
+</script>
 </head>
 <body>
-<a href="w1.html">basic watch position</a><br><br>
-<br><br>
+<h3>Bugzilla Firefox iOS Searches</h3>
+  <form action='https://bugzilla.mozilla.org/buglist.cgi?https://bugzilla.mozilla.org/buglist.cgi'>
+    Quicksearch:
+    <input type='text' name='quicksearch'>
+    <input type='hidden' name='product' value='Firefox for iOS'>
+    <input type='submit'>
+  </form>
+<p>
 
-  <a href="w2.html">basic watch position, with high accuracy and 30 sec timout</a><br>
-<br><br>
-<br><br>
-<a href="w3.html">basic watch position, with LOW accuracy and 30 sec timout</a>
+  <form onsubmit='window.quicksearch("qs1", "whiteboard:")' action='https://bugzilla.mozilla.org/buglist.cgi?https://bugzilla.mozilla.org/buglist.cgi'>
+    Whiteboard Search:
+    <input type='text' id='qs1' name='quicksearch'>
+    <input type='hidden' name='product' value='Firefox for iOS'>
+    <input type='submit'>
+  </form>
+  <p>
 
-<br><br>
-
-<a href="w4.html">watch position, with high accuracy and max age 1 sec</a>
-
-<br><br>
-A cool map:
-<a href="YellowstoneMapHtml5Canvas.html">Yellowstone html5 canvas map</a>
-
-<a href="leafy/index.html">leafy</a>
-
+  <form onsubmit='window.quicksearch("tracking", "cf_tracking_fxios:")' action='https://bugzilla.mozilla.org/buglist.cgi?https://bugzilla.mozilla.org/buglist.cgi'>
+    Tracking Search:
+    <input id='tracking' type='text' name='quicksearch'>
+    <input type='submit'><br><small><i>try: 8.1</i></small>
+  </form>
 </body>
 </html>
