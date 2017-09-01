@@ -1,0 +1,28 @@
+<html>
+
+<head>
+    <script>
+        function testImage(URL) {
+            var tester = new Image();
+            tester.onload = imageFound;
+            tester.onerror = imageNotFound;
+            tester.src = URL;
+        }
+
+        function imageFound() {
+            document.body.innerHTML = 'image loaded'
+        }
+
+        function imageNotFound() {
+            alert('image not loaded.');
+        }
+
+        window.onload = () => {
+            testImage('http://ymail.com/favicon.ico');
+        }
+    </script>
+</head>
+
+<body></body>
+
+</html>
